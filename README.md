@@ -1,4 +1,4 @@
-
+#UPDATE SOON....
 
 This Flask application allows users to input a YouTube channel URL and retrieve detailed information about the channel, including the title, profile picture, description, total videos, average views, and more. It also displays trending videos on YouTube.
 
