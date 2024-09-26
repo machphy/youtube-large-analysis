@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Channel Analyzer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">YouTube Channel Analyzer</h1>
+        
+        <form method="POST" class="mt-4">
+            <div class="form-group">
+                <label for="youtube_url">YouTube Channel URL:</label>
+                <input type="text" name="youtube_url" id="youtube_url" class="form-control" placeholder="Enter YouTube channel URL" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Analyze Channel</button>
+        </form>
+
+        <!-- Display error message if any -->
+        {% if error %}
+        <div class="alert alert-danger mt-4">{{ error }}</div>
+        {% endif %}
+
+        <!-- Display channel details if available -->
+        {% if details %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>{{ details.title }}</h3>
+            </div>
+            <div class="card-body">
+                <img src="{{ details.profile_image }}" alt="Profile Image" class="img-fluid" width="150">
+                <p><strong>Description:</strong> {{ details.description }}</p>
+                <p><strong>Subscribers:</strong> {{ details.subscribers }}</p>
+                <p><strong>Total Views:</strong> {{ details.total_views }}</p>
+                <p><strong>Total Videos:</strong> {{ details.total_videos }}</p>
+                <p><strong>Creation Date:</strong> {{ details.creation_date }}</p>
+                <p><strong>Country:</strong> {{ details.country }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
