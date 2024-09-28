@@ -1,47 +1,71 @@
 body {
+    background-color: #f8f9fa;
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
-    padding: 20px;
 }
 
-form {
-    margin: 20px;
+h1 {
+    color: #007bff;
 }
 
-input[type="text"] {
-    width: 60%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.loading {
+    display: none;
 }
 
-button {
-    background-color: #ff0000;
-    color: white;
-    padding: 10px 20px;
+.card {
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-button:hover {
-    background-color: #cc0000;
+.card-header {
+    background-color: #007bff;
+    color: white;
+    border-radius: 10px 10px 0 0;
 }
 
-.channel-info {
-    margin: 20px;
-    text-align: left;
-    display: inline-block;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease;
 }
 
-img {
-    width: 150px;
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.alert {
+    border-radius: 5px;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.img-fluid {
     border-radius: 50%;
+    border: 2px solid #007bff;
+}
+
+.card-title {
+    color: #343a40;
+}
+
+.card-body p {
+    color: #6c757d;
+}
+
+.card-body a {
+    text-decoration: none;
+}
+
+.card-body a:hover {
+    text-decoration: underline;
 }

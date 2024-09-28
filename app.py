@@ -4,10 +4,11 @@ import re
 import csv
 from datetime import datetime
 import os
+import isodate
 
 app = Flask(__name__)
 
-API_KEY ='AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Ec'
+API_KEY = 'AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Ec'
 youtube = build('youtube', 'v3', developerKey=API_KEY)
 
 def get_channel_id(url):
@@ -31,7 +32,6 @@ def get_channel_id(url):
                 response = youtube.search().list(part='snippet', q=handle_name, type='channel').execute()
                 if 'items' in response and len(response['items']) > 0:
                     channel_id = response['items'][0]['id']['channelId']
-        
         return channel_id
     except Exception as e:
         print(f"Error in get_channel_id: {e}")
@@ -66,7 +66,7 @@ def get_recent_videos(channel_id):
         response = request.execute()
         uploads_playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 
-        video_request = youtube.playlistItems().list(part="snippet", playlistId=uploads_playlist_id, maxResults=5)
+        video_request = youtube.playlistItems().list(part="snippet", playlistId=uploads_playlist_id, maxResults=50)
         video_response = video_request.execute()
 
         videos = []
@@ -75,8 +75,13 @@ def get_recent_videos(channel_id):
                 'title': item['snippet']['title'],
                 'thumbnail': item['snippet']['thumbnails']['high']['url'],
                 'published_at': item['snippet']['publishedAt'],
-                'video_id': item['snippet']['resourceId']['videoId']
+                'video_id': item['snippet']['resourceId']['videoId'],
             }
+            # Fetching views and likes for the video
+            video_stats = youtube.videos().list(part='statistics', id=video_details['video_id']).execute()
+            video_details['views'] = video_stats['items'][0]['statistics'].get('viewCount', 0)
+            video_details['likes'] = video_stats['items'][0]['statistics'].get('likeCount', 0)
+
             videos.append(video_details)
 
         return videos
@@ -104,26 +109,15 @@ def get_trending_videos(country='US'):
         print(f"Error in get_trending_videos: {e}")
         return []
 
-def save_channel_stats_as_csv(details):
-    csv_filename = 'channel_stats.csv'
-    try:
-        file_exists = os.path.isfile(csv_filename)
-        with open(csv_filename, mode='a', newline='') as csv_file:
-            fieldnames = ['title', 'description', 'profile_image', 'subscribers', 'total_views', 'total_videos', 'creation_date', 'country', 'date_recorded']
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-            if not file_exists:
-                writer.writeheader()
-            
-            details['date_recorded'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            writer.writerow(details)
-        return csv_filename
-    except Exception as e:
-        print(f"Error saving CSV: {e}")
-        return None
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    details = None
+    videos = []
+    trending_videos = []
+    most_viewed_video = None
+    most_liked_video = None
+    error = None
+
     if request.method == 'POST':
         youtube_url = request.form.get('youtube_url')
 
@@ -134,14 +128,23 @@ def index():
                 if details:
                     videos = get_recent_videos(channel_id)
                     trending_videos = get_trending_videos()
-                    csv_file = save_channel_stats_as_csv(details)
-                    return render_template('index.html', details=details, videos=videos, trending_videos=trending_videos, csv_file=csv_file)
+
+                    # Find most viewed and most liked videos
+                    if videos:
+                        most_viewed_video = max(videos, key=lambda v: int(v['views']))  # Ensure views are treated as int
+                        most_liked_video = max(videos, key=lambda v: int(v['likes']))  # Ensure likes are treated as int
+
                 else:
-                    return render_template('index.html', error="Unable to fetch channel details.")
+                    error = "Unable to fetch channel details."
             else:
-                return render_template('index.html', error="Invalid YouTube URL.")
+                error = "Invalid YouTube URL."
+
     trending_videos = get_trending_videos()
-    return render_template('index.html', trending_videos=trending_videos)
+    return render_template('index.html', details=details, videos=videos, 
+                           trending_videos=trending_videos, 
+                           most_viewed_video=most_viewed_video, 
+                           most_liked_video=most_liked_video, 
+                           error=error)
 
 if __name__ == "__main__":
     app.run(debug=True)

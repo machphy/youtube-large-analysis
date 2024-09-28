@@ -3,20 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Channel Analyzer</title>
+    <title>TubeMetrics-Advanced-Analysis-for-YouTube-Channels</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .loading {
+            display: none;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .alert {
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">YouTube Channel Analyzer</h1>
+        <h1 class="text-center mb-4">TubeMetrics-Advanced-Analysis-for-YouTube-Channels</h1>
         
-        <form method="POST" class="mt-4">
+        <form method="POST" class="mt-4" id="channel-form">
             <div class="form-group">
                 <label for="youtube_url">YouTube Channel URL:</label>
                 <input type="text" name="youtube_url" id="youtube_url" class="form-control" placeholder="Enter YouTube channel URL" required>
             </div>
-            <button type="submit" class="btn btn-primary">Analyze Channel</button>
+            <button type="submit" class="btn btn-primary btn-block">Analyze Channel</button>
         </form>
+
+        <!-- Loading Spinner -->
+        <div class="loading text-center mt-4">
+            <p>Loading... Please wait.</p>
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
 
         <!-- Display error message if any -->
         {% if error %}
@@ -26,23 +66,53 @@
         <!-- Display channel details if available -->
         {% if details %}
         <div class="card mt-4">
-            <div class="card-header">
+            <div class="card-header text-center">
                 <h3>{{ details.title }}</h3>
             </div>
-            <div class="card-body">
-                <img src="{{ details.profile_image }}" alt="Profile Image" class="img-fluid" width="150">
-                <p><strong>Description:</strong> {{ details.description }}</p>
+            <div class="card-body text-center">
+                <img src="{{ details.profile_image }}" alt="Profile Image" class="img-fluid rounded-circle" width="150">
+                <p class="mt-2"><strong>Description:</strong> {{ details.description }}</p>
                 <p><strong>Subscribers:</strong> {{ details.subscribers }}</p>
                 <p><strong>Total Views:</strong> {{ details.total_views }}</p>
                 <p><strong>Total Videos:</strong> {{ details.total_videos }}</p>
                 <p><strong>Creation Date:</strong> {{ details.creation_date }}</p>
                 <p><strong>Country:</strong> {{ details.country }}</p>
-                <a href="/static/{{ csv_file }}" class="btn btn-secondary mt-3">Download CSV</a>
+                <a href="/static/channel_stats.csv" class="btn btn-secondary mt-3">Download CSV</a>
             </div>
         </div>
         {% endif %}
 
-        <!-- Display recent videos if available -->
+        <!-- Display Most Viewed Video -->
+        {% if most_viewed_video %}
+        <div class="mt-4">
+            <h3>Most Viewed Video</h3>
+            <div class="card mb-4">
+                <img src="{{ most_viewed_video.thumbnail }}" class="card-img-top" alt="{{ most_viewed_video.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ most_viewed_video.title }}</h5>
+                    <p><strong>Views:</strong> {{ most_viewed_video.views }}</p>
+                    <a href="https://www.youtube.com/watch?v={{ most_viewed_video.video_id }}" class="btn btn-primary" target="_blank">Watch Video</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display Most Liked Video -->
+        {% if most_liked_video %}
+        <div class="mt-4">
+            <h3>Most Liked Video</h3>
+            <div class="card mb-4">
+                <img src="{{ most_liked_video.thumbnail }}" class="card-img-top" alt="{{ most_liked_video.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ most_liked_video.title }}</h5>
+                    <p><strong>Likes:</strong> {{ most_liked_video.likes }}</p>
+                    <a href="https://www.youtube.com/watch?v={{ most_liked_video.video_id }}" class="btn btn-primary" target="_blank">Watch Video</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display Recent Videos -->
         {% if videos %}
         <div class="mt-4">
             <h3>Recent Videos</h3>
@@ -63,7 +133,7 @@
         </div>
         {% endif %}
 
-        <!-- Display trending videos -->
+        <!-- Display Trending Videos -->
         {% if trending_videos %}
         <div class="mt-4">
             <h3>Trending Videos</h3>
@@ -84,5 +154,12 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        // Show loading spinner on form submission
+        document.getElementById('channel-form').onsubmit = function() {
+            document.querySelector('.loading').style.display = 'block';
+        };
+    </script>
 </body>
 </html>
