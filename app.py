@@ -1,74 +1,42 @@
 from flask import Flask, render_template, request
 from googleapiclient.discovery import build
 import re
+import csv
+from datetime import datetime
+import os
 
 app = Flask(__name__)
 
-API_KEY = 'AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Ec'  # Replace with your actual API key
-
-# Initialize YouTube API client
+API_KEY ='AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Ec'
 youtube = build('youtube', 'v3', developerKey=API_KEY)
 
-# Function to extract channel ID or username from a YouTube URL
 def get_channel_id(url):
     try:
-        print(f"Processing YouTube URL: {url}")
         channel_id = None
-
-        # Check if the URL contains a channel ID
         if 'youtube.com/channel/' in url:
             match = re.search(r'channel/([^/?&]+)', url)
             if match:
                 channel_id = match.group(1)
-
-        # Check if it's a custom URL with username or handle
         elif 'youtube.com/c/' in url or 'youtube.com/user/' in url:
             match = re.search(r'/(c|user)/([^/?&]+)', url)
             if match:
                 username = match.group(2)
-                print(f"Extracted username: {username}")
-
-                # Fetch the channel ID via username
                 response = youtube.channels().list(forUsername=username, part='id').execute()
                 if 'items' in response and len(response['items']) > 0:
                     channel_id = response['items'][0]['id']
-                else:
-                    print("No channel found for the given username.")
-        
-        # Check for @username handle URLs
         elif 'youtube.com/@' in url:
             match = re.search(r'@([^/?&]+)', url)
             if match:
                 handle_name = match.group(1)
-                print(f"Extracted handle name: {handle_name}")
-
-                # Search for the channel by handle name using `search.list`
                 response = youtube.search().list(part='snippet', q=handle_name, type='channel').execute()
                 if 'items' in response and len(response['items']) > 0:
                     channel_id = response['items'][0]['id']['channelId']
-                    print(f"Found channel ID from handle: {channel_id}")
-                else:
-                    print("No channel found for the given handle. Attempting a direct query.")
-                    # Fallback to directly querying with the username in the handle
-                    channel_response = youtube.channels().list(forUsername=handle_name, part='id').execute()
-                    if 'items' in channel_response and len(channel_response['items']) > 0:
-                        channel_id = channel_response['items'][0]['id']
-                        print(f"Fallback found channel ID: {channel_id}")
-                    else:
-                        print("Still no channel found for the handle.")
-        
-        if channel_id:
-            print(f"Extracted Channel ID: {channel_id}")
-        else:
-            print("No valid channel ID or username found.")
         
         return channel_id
-
     except Exception as e:
         print(f"Error in get_channel_id: {e}")
         return None
 
-# Function to fetch channel details using channel ID
 def get_channel_details(channel_id):
     try:
         request = youtube.channels().list(part="snippet,statistics,contentDetails,brandingSettings", id=channel_id)
@@ -92,7 +60,68 @@ def get_channel_details(channel_id):
         print(f"Error in get_channel_details: {e}")
         return None
 
-# Route to handle the main page and form submission
+def get_recent_videos(channel_id):
+    try:
+        request = youtube.channels().list(part="contentDetails", id=channel_id)
+        response = request.execute()
+        uploads_playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+
+        video_request = youtube.playlistItems().list(part="snippet", playlistId=uploads_playlist_id, maxResults=5)
+        video_response = video_request.execute()
+
+        videos = []
+        for item in video_response['items']:
+            video_details = {
+                'title': item['snippet']['title'],
+                'thumbnail': item['snippet']['thumbnails']['high']['url'],
+                'published_at': item['snippet']['publishedAt'],
+                'video_id': item['snippet']['resourceId']['videoId']
+            }
+            videos.append(video_details)
+
+        return videos
+    except Exception as e:
+        print(f"Error in get_recent_videos: {e}")
+        return []
+
+def get_trending_videos(country='US'):
+    try:
+        request = youtube.videos().list(part="snippet,statistics", chart="mostPopular", regionCode=country, maxResults=5)
+        response = request.execute()
+
+        trending_videos = []
+        for item in response['items']:
+            video_details = {
+                'title': item['snippet']['title'],
+                'thumbnail': item['snippet']['thumbnails']['high']['url'],
+                'views': item['statistics']['viewCount'],
+                'video_id': item['id']
+            }
+            trending_videos.append(video_details)
+
+        return trending_videos
+    except Exception as e:
+        print(f"Error in get_trending_videos: {e}")
+        return []
+
+def save_channel_stats_as_csv(details):
+    csv_filename = 'channel_stats.csv'
+    try:
+        file_exists = os.path.isfile(csv_filename)
+        with open(csv_filename, mode='a', newline='') as csv_file:
+            fieldnames = ['title', 'description', 'profile_image', 'subscribers', 'total_views', 'total_videos', 'creation_date', 'country', 'date_recorded']
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            if not file_exists:
+                writer.writeheader()
+            
+            details['date_recorded'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            writer.writerow(details)
+        return csv_filename
+    except Exception as e:
+        print(f"Error saving CSV: {e}")
+        return None
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -100,16 +129,19 @@ def index():
 
         if youtube_url:
             channel_id = get_channel_id(youtube_url)
-
             if channel_id:
                 details = get_channel_details(channel_id)
                 if details:
-                    return render_template('index.html', details=details)
+                    videos = get_recent_videos(channel_id)
+                    trending_videos = get_trending_videos()
+                    csv_file = save_channel_stats_as_csv(details)
+                    return render_template('index.html', details=details, videos=videos, trending_videos=trending_videos, csv_file=csv_file)
                 else:
                     return render_template('index.html', error="Unable to fetch channel details.")
             else:
                 return render_template('index.html', error="Invalid YouTube URL.")
-    return render_template('index.html')
+    trending_videos = get_trending_videos()
+    return render_template('index.html', trending_videos=trending_videos)
 
 if __name__ == "__main__":
     app.run(debug=True)

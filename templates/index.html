@@ -37,6 +37,49 @@
                 <p><strong>Total Videos:</strong> {{ details.total_videos }}</p>
                 <p><strong>Creation Date:</strong> {{ details.creation_date }}</p>
                 <p><strong>Country:</strong> {{ details.country }}</p>
+                <a href="/static/{{ csv_file }}" class="btn btn-secondary mt-3">Download CSV</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display recent videos if available -->
+        {% if videos %}
+        <div class="mt-4">
+            <h3>Recent Videos</h3>
+            <div class="row">
+                {% for video in videos %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ video.thumbnail }}" class="card-img-top" alt="{{ video.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p><strong>Published at:</strong> {{ video.published_at }}</p>
+                            <a href="https://www.youtube.com/watch?v={{ video.video_id }}" class="btn btn-primary" target="_blank">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display trending videos -->
+        {% if trending_videos %}
+        <div class="mt-4">
+            <h3>Trending Videos</h3>
+            <div class="row">
+                {% for video in trending_videos %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ video.thumbnail }}" class="card-img-top" alt="{{ video.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p><strong>Views:</strong> {{ video.views }}</p>
+                            <a href="https://www.youtube.com/watch?v={{ video.video_id }}" class="btn btn-primary" target="_blank">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}
