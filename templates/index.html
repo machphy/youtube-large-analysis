@@ -14,6 +14,9 @@
             max-width: 300px; /* Reduced size for video cards */
             margin: auto;
         }
+        .video-link-input {
+            display: none; /* Initially hide the video link input */
+        }
     </style>
 </head>
 <body>
@@ -52,6 +55,10 @@
                                     <option value="twitter">Twitter</option>
                                     <option value="facebook">Facebook</option>
                                 </select>
+                            </div>
+                            <div class="form-group video-link-input">
+                                <label for="video_link">Video Link:</label>
+                                <input type="text" name="video_link" id="video_link" class="form-control" placeholder="Enter Video URL" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Analyze Sentiment</button>
                         </form>
@@ -139,7 +146,6 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ video.title }}</h5>
                                 <p><strong>Published at:</strong> {{ video.published_at }}</p>
-                                <div class="sentiment-result" id="sentiment-{{ video.video_id }}"></div>
                                 <a href="https://www.youtube.com/watch?v={{ video.video_id }}" class="btn btn-primary mt-2" target="_blank">Watch Video</a>
                             </div>
                         </div>
@@ -178,6 +184,12 @@
         <div class="mt-4">
             <h3>Sentiment Analysis Results</h3>
             <img src="{{ url_for('static', filename='sentiment_chart.png') }}" alt="Sentiment Analysis Chart" class="img-fluid">
+            <div class="mt-3">
+                <h5>Sentiment Summary:</h5>
+                <p><strong>Positive:</strong> {{ sentiment_data.positive }}</p>
+                <p><strong>Negative:</strong> {{ sentiment_data.negative }}</p>
+                <p><strong>Neutral:</strong> {{ sentiment_data.neutral }}</p>
+            </div>
         </div>
         {% endif %}
     </div>
@@ -188,29 +200,15 @@
             document.querySelector('.loading').style.display = 'block';
         };
 
-        // Handle sentiment analysis button clicks
-        document.querySelectorAll('.analyze-sentiment').forEach(button => {
-            button.addEventListener('click', function() {
-                const videoId = this.dataset.videoId;
-                fetch('/analyze_sentiment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ video_id: videoId }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const resultDiv = document.getElementById(`sentiment-${videoId}`);
-                    resultDiv.innerHTML = `<strong>Sentiment:</strong> ${data.sentiment}`;
-                    // Optionally, show more results like sentiment score here
-                });
-            });
-        });
+        // Show/hide video link input based on selected platform
+        document.getElementById('social_media').onchange = function() {
+            const videoLinkInput = document.querySelector('.video-link-input');
+            videoLinkInput.style.display = this.value === 'youtube' ? 'block' : 'none';
+        };
     </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
