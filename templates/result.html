@@ -3,54 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Channel Analysis</title>
+    <title>Sentiment Analysis Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Channel Analysis</h1>
-        <form method="POST" action="/">
-            <input type="text" name="youtube_url" placeholder="Enter YouTube Channel URL" required>
-            <button type="submit">Analyze</button>
-        </form>
-
-        {% if details %}
-        <div class="channel-details">
-            <h2>{{ details.title }}</h2>
-            <img src="{{ details.profile_image }}" alt="Channel Image">
-            <p>{{ details.description }}</p>
-            <p>Subscribers: {{ details.subscribers }}</p>
-            <p>Total Views: {{ details.total_views }}</p>
-            <p>Total Videos: {{ details.total_videos }}</p>
+        <h1>Sentiment Analysis Results</h1>
+        
+        <div class="sentiment-summary">
+            <h2>Positive Comments: {{ positive }}</h2>
+            <h2>Neutral Comments: {{ neutral }}</h2>
+            <h2>Negative Comments: {{ negative }}</h2>
         </div>
-        {% endif %}
 
-        {% if videos %}
-        <h3>Recent Videos:</h3>
-        <ul>
-            {% for video in videos %}
-            <li>
-                <h4>{{ video.title }}</h4>
-                <img src="{{ video.thumbnail }}" alt="Video Thumbnail">
-                <p>Published At: {{ video.published_at }}</p>
-                <p>Views: {{ video.views }}</p>
-                <p>Likes: {{ video.likes }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+        <div class="chart-container">
+            <h3>Sentiment Chart:</h3>
+            <img src="{{ url_for('static', filename='sentiment_chart.png') }}" alt="Sentiment Analysis Chart" class="img-fluid" style="max-width: 100%; height: auto;">
+        </div>
 
-        {% if sentiment_data %}
-        <h3>Sentiment Analysis Results:</h3>
-        <p>Positive Comments: {{ sentiment_data.positive }}</p>
-        <p>Neutral Comments: {{ sentiment_data.neutral }}</p>
-        <p>Negative Comments: {{ sentiment_data.negative }}</p>
-        <img src="{{ url_for('static', filename='sentiment_chart.png') }}" alt="Sentiment Chart">
-        {% endif %}
-
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
+        <a href="{{ url_for('index') }}">Go Back</a>
     </div>
 </body>
 </html>

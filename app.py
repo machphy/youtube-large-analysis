@@ -10,10 +10,12 @@ app = Flask(__name__)
 API_KEY = 'AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Ec'
 youtube = build('youtube', 'v3', developerKey=API_KEY)
 
-# Sample data structure for channel data (could be fetched from a database)
+# Ensure static folder exists
+if not os.path.exists('static'):
+    os.makedirs('static')
+
 channels_data = {}
 
-# Function to extract the channel ID from the URL
 def get_channel_id(url):
     try:
         if 'youtube.com/channel/' in url:
@@ -35,7 +37,6 @@ def get_channel_id(url):
         print(f"Error in get_channel_id: {e}")
     return None
 
-# Function to get channel details
 def get_channel_details(channel_id):
     try:
         request = youtube.channels().list(part="snippet,statistics,contentDetails,brandingSettings", id=channel_id)
@@ -52,13 +53,12 @@ def get_channel_details(channel_id):
                 'total_views': int(channel_info['statistics'].get('viewCount', 0)),
                 'total_videos': int(channel_info['statistics'].get('videoCount', 0))
             }
-            channels_data[channel_id] = details  # Store channel data for future reference
+            channels_data[channel_id] = details
             return details
     except Exception as e:
         print(f"Error in get_channel_details: {e}")
     return None
 
-# Function to get recent videos from a channel
 def get_recent_videos(channel_id):
     try:
         request = youtube.channels().list(part="contentDetails", id=channel_id)
@@ -75,7 +75,6 @@ def get_recent_videos(channel_id):
                 'published_at': item['snippet']['publishedAt'],
                 'video_id': item['snippet']['resourceId']['videoId'],
             }
-            # Fetching views and likes for the video
             video_stats = youtube.videos().list(part='statistics', id=video_details['video_id']).execute()
             video_details['views'] = int(video_stats['items'][0]['statistics'].get('viewCount', 0))
             video_details['likes'] = int(video_stats['items'][0]['statistics'].get('likeCount', 0))
@@ -87,7 +86,6 @@ def get_recent_videos(channel_id):
         print(f"Error in get_recent_videos: {e}")
     return []
 
-# Function to get trending videos
 def get_trending_videos(country='US'):
     try:
         request = youtube.videos().list(part="snippet,statistics", chart="mostPopular", regionCode=country, maxResults=5)
@@ -108,7 +106,6 @@ def get_trending_videos(country='US'):
         print(f"Error in get_trending_videos: {e}")
     return []
 
-# Function to analyze comments for sentiment
 def analyze_comments(video_id):
     try:
         comments = []
@@ -123,7 +120,6 @@ def analyze_comments(video_id):
             if not next_page_token:
                 break
 
-        # Perform sentiment analysis on the comments
         sentiment_data = {'positive': 0, 'negative': 0, 'neutral': 0}
         for comment in comments:
             analysis = TextBlob(comment)
@@ -142,7 +138,6 @@ def analyze_comments(video_id):
         print(f"Error in analyze_comments: {e}")
     return {'positive': 0, 'negative': 0, 'neutral': 0}
 
-# Function to create a sentiment chart
 def create_sentiment_chart(sentiment_data):
     labels = list(sentiment_data.keys())
     sizes = list(sentiment_data.values())
@@ -155,10 +150,11 @@ def create_sentiment_chart(sentiment_data):
     # Save the figure
     plt.title('Sentiment Analysis of Comments')
     image_path = os.path.join('static', 'sentiment_chart.png')  # Ensure this path exists
-    plt.savefig(image_path)
+    plt.savefig('static/sentiment_chart.png')
     plt.close()
+    
+    print(f"Chart saved at: {image_path}")  # Debugging line
 
-# New route for analyzing sentiment across multiple platforms
 @app.route('/analyze_sentiment', methods=['POST'])
 def analyze_sentiment():
     platform = request.form.get('platform')
@@ -167,10 +163,8 @@ def analyze_sentiment():
     if platform == 'youtube':
         video_id = extract_video_id(video_link)
         if video_id:
-            # Fetch comments and perform sentiment analysis for YouTube
             sentiment_data = analyze_comments(video_id)
 
-            # Return the sentiment data and chart URL
             return jsonify({
                 'sentiment_data': sentiment_data,
                 'sentiment_chart_url': url_for('static', filename='sentiment_chart.png')
@@ -180,7 +174,6 @@ def analyze_sentiment():
 
     return jsonify({'error': 'Invalid platform selected'}), 400
 
-# Helper functions
 def extract_video_id(video_url):
     match = re.search(r'(?<=v=)[^&]+', video_url)
     return match.group(0) if match else None
@@ -205,10 +198,9 @@ def index():
                     videos = get_recent_videos(channel_id)
                     trending_videos = get_trending_videos()
 
-                    # Find most viewed and most liked videos
                     if videos:
-                        most_viewed_video = max(videos, key=lambda v: v['views'])  # Ensure views are treated as int
-                        most_liked_video = max(videos, key=lambda v: v['likes'])  # Ensure likes are treated as int
+                        most_viewed_video = max(videos, key=lambda v: v['views'])
+                        most_liked_video = max(videos, key=lambda v: v['likes'])
 
                 else:
                     error = "Unable to fetch channel details."
