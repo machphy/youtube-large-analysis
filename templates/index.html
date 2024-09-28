@@ -62,6 +62,8 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Analyze Sentiment</button>
                         </form>
+                        <!-- Result display area -->
+                        <div id="sentiment-results" class="mt-3"></div>
                     </div>
                 </div>
             </div>
@@ -200,15 +202,36 @@
             document.querySelector('.loading').style.display = 'block';
         };
 
-        // Show/hide video link input based on selected platform
-        document.getElementById('social_media').onchange = function() {
+        // Show video link input based on selected social media
+        document.getElementById('social_media').addEventListener('change', function() {
             const videoLinkInput = document.querySelector('.video-link-input');
             videoLinkInput.style.display = this.value === 'youtube' ? 'block' : 'none';
+        });
+
+        // Handle sentiment form submission
+        document.getElementById('sentiment-form').onsubmit = function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const platform = document.getElementById('social_media').value;
+            const videoLink = document.getElementById('video_link').value;
+
+            // Show loading spinner
+            document.querySelector('.loading').style.display = 'block';
+
+            // Simulate sentiment analysis processing
+            setTimeout(() => {
+                // Here you would typically make an AJAX call to your Flask backend
+                document.querySelector('.loading').style.display = 'none';
+                const resultsDiv = document.getElementById('sentiment-results');
+                resultsDiv.innerHTML = `<h5>Results for ${platform} analysis on ${videoLink}:</h5>
+                    <p>Positive: 70%</p>
+                    <p>Negative: 15%</p>
+                    <p>Neutral: 15%</p>`;
+            }, 2000); // Simulate a delay of 2 seconds for processing
         };
     </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

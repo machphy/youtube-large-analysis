@@ -2,3 +2,6 @@ API_KEY ='AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Eo'
 
 
 phase=1 ok
+
+
+pip install Flask google-api-python-client

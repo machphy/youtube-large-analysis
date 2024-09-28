@@ -1,11 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 from googleapiclient.discovery import build
 import re
 import os
-import isodate
-from textblob import TextBlob  # Ensure you have this library for sentiment analysis
 import matplotlib.pyplot as plt
-import numpy as np
+from textblob import TextBlob  # Ensure you have this library for sentiment analysis
 
 app = Flask(__name__)
 
@@ -15,37 +13,33 @@ youtube = build('youtube', 'v3', developerKey=API_KEY)
 # Sample data structure for channel data (could be fetched from a database)
 channels_data = {}
 
+# Function to extract the channel ID from the URL
 def get_channel_id(url):
     try:
-        channel_id = None
         if 'youtube.com/channel/' in url:
             match = re.search(r'channel/([^/?&]+)', url)
-            if match:
-                channel_id = match.group(1)
+            return match.group(1) if match else None
         elif 'youtube.com/c/' in url or 'youtube.com/user/' in url:
             match = re.search(r'/(c|user)/([^/?&]+)', url)
             if match:
                 username = match.group(2)
                 response = youtube.channels().list(forUsername=username, part='id').execute()
-                if 'items' in response and len(response['items']) > 0:
-                    channel_id = response['items'][0]['id']
+                return response['items'][0]['id'] if 'items' in response and len(response['items']) > 0 else None
         elif 'youtube.com/@' in url:
             match = re.search(r'@([^/?&]+)', url)
             if match:
                 handle_name = match.group(1)
                 response = youtube.search().list(part='snippet', q=handle_name, type='channel').execute()
-                if 'items' in response and len(response['items']) > 0:
-                    channel_id = response['items'][0]['id']['channelId']
-        return channel_id
+                return response['items'][0]['id']['channelId'] if 'items' in response and len(response['items']) > 0 else None
     except Exception as e:
         print(f"Error in get_channel_id: {e}")
-        return None
+    return None
 
+# Function to get channel details
 def get_channel_details(channel_id):
     try:
         request = youtube.channels().list(part="snippet,statistics,contentDetails,brandingSettings", id=channel_id)
         response = request.execute()
-
         if 'items' in response and len(response['items']) > 0:
             channel_info = response['items'][0]
             details = {
@@ -60,17 +54,16 @@ def get_channel_details(channel_id):
             }
             channels_data[channel_id] = details  # Store channel data for future reference
             return details
-        return None
     except Exception as e:
         print(f"Error in get_channel_details: {e}")
-        return None
+    return None
 
+# Function to get recent videos from a channel
 def get_recent_videos(channel_id):
     try:
         request = youtube.channels().list(part="contentDetails", id=channel_id)
         response = request.execute()
         uploads_playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
-
         video_request = youtube.playlistItems().list(part="snippet", playlistId=uploads_playlist_id, maxResults=50)
         video_response = video_request.execute()
 
@@ -92,8 +85,9 @@ def get_recent_videos(channel_id):
         return videos
     except Exception as e:
         print(f"Error in get_recent_videos: {e}")
-        return []
+    return []
 
+# Function to get trending videos
 def get_trending_videos(country='US'):
     try:
         request = youtube.videos().list(part="snippet,statistics", chart="mostPopular", regionCode=country, maxResults=5)
@@ -112,8 +106,9 @@ def get_trending_videos(country='US'):
         return trending_videos
     except Exception as e:
         print(f"Error in get_trending_videos: {e}")
-        return []
+    return []
 
+# Function to analyze comments for sentiment
 def analyze_comments(video_id):
     try:
         comments = []
@@ -145,8 +140,9 @@ def analyze_comments(video_id):
         return sentiment_data
     except Exception as e:
         print(f"Error in analyze_comments: {e}")
-        return {'positive': 0, 'negative': 0, 'neutral': 0}
+    return {'positive': 0, 'negative': 0, 'neutral': 0}
 
+# Function to create a sentiment chart
 def create_sentiment_chart(sentiment_data):
     labels = list(sentiment_data.keys())
     sizes = list(sentiment_data.values())
@@ -158,9 +154,36 @@ def create_sentiment_chart(sentiment_data):
 
     # Save the figure
     plt.title('Sentiment Analysis of Comments')
-    image_path = os.path.join('static', 'sentiment_chart.png')  # Adjust path as necessary
+    image_path = os.path.join('static', 'sentiment_chart.png')  # Ensure this path exists
     plt.savefig(image_path)
     plt.close()
+
+# New route for analyzing sentiment across multiple platforms
+@app.route('/analyze_sentiment', methods=['POST'])
+def analyze_sentiment():
+    platform = request.form.get('platform')
+    video_link = request.form.get('video_link')
+
+    if platform == 'youtube':
+        video_id = extract_video_id(video_link)
+        if video_id:
+            # Fetch comments and perform sentiment analysis for YouTube
+            sentiment_data = analyze_comments(video_id)
+
+            # Return the sentiment data and chart URL
+            return jsonify({
+                'sentiment_data': sentiment_data,
+                'sentiment_chart_url': url_for('static', filename='sentiment_chart.png')
+            })
+        else:
+            return jsonify({'error': 'Invalid YouTube video URL'}), 400
+
+    return jsonify({'error': 'Invalid platform selected'}), 400
+
+# Helper functions
+def extract_video_id(video_url):
+    match = re.search(r'(?<=v=)[^&]+', video_url)
+    return match.group(0) if match else None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -193,24 +216,7 @@ def index():
                 error = "Invalid YouTube URL."
 
     trending_videos = get_trending_videos()
-    return render_template('index.html', details=details, videos=videos, 
-                           trending_videos=trending_videos, 
-                           most_viewed_video=most_viewed_video, 
-                           most_liked_video=most_liked_video, 
-                           error=error)
+    return render_template('index.html', details=details, videos=videos, trending_videos=trending_videos, most_viewed_video=most_viewed_video, most_liked_video=most_liked_video, error=error)
 
-@app.route('/analyze_sentiment', methods=['POST'])
-def analyze_sentiment():
-    video_id = request.form.get('video_id')
-    if video_id:
-        sentiment_data = analyze_comments(video_id)
-        return jsonify(sentiment_data)
-    return jsonify({'error': 'Video ID not provided'}), 400
-
-@app.route('/rankings', methods=['GET'])
-def rankings_api():
-    rankings = {channel_id: details for channel_id, details in channels_data.items()}
-    return jsonify(rankings)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
