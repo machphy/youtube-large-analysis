@@ -1,4 +1,9 @@
-#UPDATE SOON...
+To add 11 screenshots into your README file, you can simply update the "Screenshots" section with the actual paths to your images. Here's how you can incorporate the 11 screenshots:
+
+### Updated README:
+
+```markdown
+# YouTube Channel Details Viewer
 
 This Flask application allows users to input a YouTube channel URL and retrieve detailed information about the channel, including the title, profile picture, description, total videos, average views, and more. It also displays trending videos on YouTube.
 
@@ -81,8 +86,40 @@ The application will show error messages for invalid URLs or if the channel is n
 
 ## Screenshots
 
-![Channel Details](path/to/your/screenshot1.png)
-![Trending Videos](path/to/your/screenshot2.png)
+Here are some screenshots showing the application's interface and features:
+
+1. **Channel Details Display:**
+   ![Channel Details](path/to/your/screenshot1.png)
+   
+2. **Trending Videos:**
+   ![Trending Videos](path/to/your/screenshot2.png)
+
+3. **Channel Stats Overview:**
+   ![Channel Stats](path/to/your/screenshot3.png)
+
+4. **Channel Profile Display:**
+   ![Profile Display](path/to/your/screenshot4.png)
+
+5. **Video Count Statistics:**
+   ![Video Count](path/to/your/screenshot5.png)
+
+6. **Average Views Display:**
+   ![Average Views](path/to/your/screenshot6.png)
+
+7. **Error Handling Example (Invalid URL):**
+   ![Invalid URL](path/to/your/screenshot7.png)
+
+8. **Custom URL Example:**
+   ![Custom URL](path/to/your/screenshot8.png)
+
+9. **User-Friendly Input Interface:**
+   ![Input Interface](path/to/your/screenshot9.png)
+
+10. **Mobile Responsive View:**
+    ![Mobile View](path/to/your/screenshot10.png)
+
+11. **Final Output View:**
+    ![Final Output](path/to/your/screenshot11.png)
 
 ## Contributing
 
@@ -98,9 +135,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Flask Documentation](https://flask.palletsprojects.com/)
 ```
 
-### Instructions:
-1. **Screenshots**: Replace `path/to/your/screenshot1.png` and `path/to/your/screenshot2.png` with the actual paths to your screenshots.
-2. **API Key**: Remind users to create their own API key and replace `YOUR_YOUTUBE_API_KEY` in the code.
-3. **Testing and Validation**: Ensure that everything works as described, especially the examples and installation steps.
+### Instructions for Adding Screenshots:
+1. Replace `path/to/your/screenshotX.png` with the actual path or file name for each screenshot you have saved.
+2. Ensure all images are in the correct location within your project (e.g., a `screenshots/` folder).
+3. You can reference your images either by their relative paths (e.g., `screenshots/screenshot1.png`) or their URLs if they are hosted online.
 
-You can copy and paste this into your README file. If you need more details or any specific section expanded, just let me know!
+Let me know if you'd like further customization or help with any other sections!
