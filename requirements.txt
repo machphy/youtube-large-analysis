@@ -1,33 +1,34 @@
+# Flask and related packages
+Flask==2.2.2                   # Web framework
+Flask-Cors==3.0.10             # Handling Cross-Origin Resource Sharing (CORS)
+Flask-RESTful==0.3.9           # Building REST APIs easily
+Flask-SQLAlchemy==2.5.1        # SQLAlchemy support for Flask
+Flask-Migrate==3.1.0           # Database migrations for Flask apps
+python-dotenv==1.0.0           # Load environment variables from .env file
 
-Flask==2.2.2                   
-Flask-Cors==3.0.10            
-Flask-RESTful==0.3.9           
-Flask-SQLAlchemy==2.5.1        
-Flask-Migrate==3.1.0           
-Flask-Dotenv==0.19.1           
+# Google API Client
+google-api-python-client==2.51.0 # Google API Client for accessing Google services
 
-google-api-python-client==2.51.0 
+# Data Processing
+pandas==1.5.3                  # Data manipulation and analysis
+numpy==1.24.2                   # Fundamental package for numerical computation
+scikit-learn==1.1.3             # Machine learning library
+scipy==1.10.1                   # Scientific computing
 
+# Web scraping (if applicable)
+requests==2.28.1                # HTTP requests
+beautifulsoup4==4.12.2          # Web scraping library
 
-pandas==1.5.3                  
-numpy==1.24.2                  
-scikit-learn==1.1.3             
-scipy==1.10.1                  
+# For deployment
+gunicorn==20.1.0                # WSGI HTTP server for UNIX
+whitenoise==5.4.0               # Static file serving for Flask
 
-requests==2.28.1               
-beautifulsoup4==4.12.2         
+# Logging and Debugging
+flask-debug==0.10.1             # Debugging for Flask
 
+# Testing
+pytest==7.2.1                   # Testing framework
+pytest-flask==1.2.0             # Flask testing utilities
 
-gunicorn==20.1.0             
-whitenoise==5.4.0               
-
-
-flask-debug==0.10.1            
-python-dotenv==1.0.0            
-
-
-pytest==7.2.1                   
-pytest-flask==1.2.0             
-
-
-python-decouple==3.6           
+# Other dependencies
+python-decouple==3.6            # Separating settings from code
