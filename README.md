@@ -1,8 +1,3 @@
-To add 11 screenshots into your README file, you can simply update the "Screenshots" section with the actual paths to your images. Here's how you can incorporate the 11 screenshots:
-
-### Updated README:
-
-```markdown
 # YouTube Channel Details Viewer
 
 This Flask application allows users to input a YouTube channel URL and retrieve detailed information about the channel, including the title, profile picture, description, total videos, average views, and more. It also displays trending videos on YouTube.
@@ -89,7 +84,7 @@ The application will show error messages for invalid URLs or if the channel is n
 Here are some screenshots showing the application's interface and features:
 
 1. **Channel Details Display:**
-   ![Channel Details](path/to/your/screenshot1.png)
+   ![Channel Details](Screenshot 2024-09-29 200342.png)
    
 2. **Trending Videos:**
    ![Trending Videos](path/to/your/screenshot2.png)
