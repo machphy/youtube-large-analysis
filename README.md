@@ -87,34 +87,28 @@ Here are some screenshots showing the application's interface and features:
    ![Channel Details](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20200342.png?raw=true)
    
 2. **Trending Videos:**
-   ![Trending Videos](path/to/your/screenshot2.png)
+   ![Trending Videos](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202825.png?raw=true)
 
 3. **Channel Stats Overview:**
-   ![Channel Stats](path/to/your/screenshot3.png)
+   ![Channel Stats](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202836.png?raw=true)
 
 4. **Channel Profile Display:**
-   ![Profile Display](path/to/your/screenshot4.png)
+   ![Profile Display](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202857.png?raw=true)
 
 5. **Video Count Statistics:**
-   ![Video Count](path/to/your/screenshot5.png)
+   ![Video Count](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202911.png?raw=true)
 
 6. **Average Views Display:**
-   ![Average Views](path/to/your/screenshot6.png)
+   ![Average Views](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202922.png?raw=true)
 
 7. **Error Handling Example (Invalid URL):**
-   ![Invalid URL](path/to/your/screenshot7.png)
+   ![Invalid URL](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20202927.png?raw=true)
 
 8. **Custom URL Example:**
-   ![Custom URL](path/to/your/screenshot8.png)
+   ![Custom URL](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20203514.png?raw=true)
 
 9. **User-Friendly Input Interface:**
-   ![Input Interface](path/to/your/screenshot9.png)
-
-10. **Mobile Responsive View:**
-    ![Mobile View](path/to/your/screenshot10.png)
-
-11. **Final Output View:**
-    ![Final Output](path/to/your/screenshot11.png)
+   ![Input Interface](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20203530.png?raw=true)
 
 ## Contributing
 
@@ -128,11 +122,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [YouTube Data API v3 Documentation](https://developers.google.com/youtube/v3)
 - [Flask Documentation](https://flask.palletsprojects.com/)
-```
 
-### Instructions for Adding Screenshots:
-1. Replace `path/to/your/screenshotX.png` with the actual path or file name for each screenshot you have saved.
-2. Ensure all images are in the correct location within your project (e.g., a `screenshots/` folder).
-3. You can reference your images either by their relative paths (e.g., `screenshots/screenshot1.png`) or their URLs if they are hosted online.
-
-Let me know if you'd like further customization or help with any other sections!
