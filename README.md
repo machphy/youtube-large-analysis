@@ -84,7 +84,7 @@ The application will show error messages for invalid URLs or if the channel is n
 Here are some screenshots showing the application's interface and features:
 
 1. **Channel Details Display:**
-   ![Channel Details](Screenshot 2024-09-29 200342.png)
+   ![Channel Details](https://github.com/machphy/TubeMetrics-Advanced-Analysis-for-YouTube-Channels/blob/main/Screenshot%202024-09-29%20200342.png?raw=true)
    
 2. **Trending Videos:**
    ![Trending Videos](path/to/your/screenshot2.png)
