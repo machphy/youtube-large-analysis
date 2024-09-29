@@ -1,7 +1,3 @@
-API_KEY ='AIzaSyD8g7vvAJQ0KCgVM4tjzxDWSXMVVRPT5Eo'
-openai_api="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"
-
-phase=1 ok
 
 
 pip install Flask google-api-python-client
